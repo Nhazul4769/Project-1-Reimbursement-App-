@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Reimbursement App</title>
+
+    <link rel="stylesheet" href="Expense-Reimbursement-Style.css">
+</head>
+<body>
+
+    <h1>Welcome to The Expense Reimbursement App</h1>
+    <form class="box" id="login-info">
+        
+        <div class="imgcontainer">
+            <img src="avatar.jpg" alt="Avatar" class="avatar">
+        </div>
+        
+        <div class="container">
+
+            <h2>Login Below</h2>
+
+            <label class ="label" for="username">Username:</label>
+            <div class="control">
+                <ion-icon size="large" name="log-in"></ion-icon>
+                <input id="username" type="text" placeholder="Enter Username"/>
+            </div> 
+
+            <label class ="label" for="password">Password:</label>
+            <ion-icon size="large" name="lock-closed"></ion-icon>
+            <input id="password" type="text" placeholder="Enter Password"/> 
+            
+            <div id="login">
+                <ion-icon size="large" name="log-in-outline"></ion-icon>
+                <button class="button is-info" id="login-btn">Login</button>
+            </div>
+        </div>
+    </form>
+
+    <script src="Expense-Reimbursement-JS.js"></script>
+
+</body>
+</html>

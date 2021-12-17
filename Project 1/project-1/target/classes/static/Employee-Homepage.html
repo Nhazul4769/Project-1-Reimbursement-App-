@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Homepage</title>
+    <link rel="stylesheet" href="Employee-Homepage-Style.css">
+</head>
+<body>
+    <h1>Employee Homepage</h1>
+    <div id="reimbursement-image-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+    
+    <div id="employee-homepage-grid-container">
+        <div id ="title">
+            <button id="logout">Logout</button>
+        </div>
+
+        <div id="reimbursements">  
+            <div class="topnav">
+                <a class="active">Search Reimbursements</a>
+                <div class="search-container">
+                  <form action="/action_page.php">
+                    <input type="text" placeholder="Search..." name="search">
+                    <button type="submit">Search</button>
+                  </form>
+                </div>
+            </div>
+            <table class = "table" id="reimbursements-table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Amount</th> 
+                        <th>Date Submitted</th> 
+                        <th>Date Resolved</th> 
+                        <th>Status</th> 
+                        <th>Type</th> 
+                        <th>Description</th> 
+                        <th>Receipt</th> 
+                        <th>Author</th> 
+                        <th>Resolver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
+            <div id="reimbursement-submit-form">
+                <h3>Submit New Reimbursement Request</h3>
+    
+                <div class="field">
+                    <label class="label" for="reimbursement-amount">Reimbursement amount:</label>
+                    <input type="text" id="reimbursement-amount" />
+                </div>
+    
+                <div class="field">
+                    <label  class="label" for="reimbursement-type">Reimbursement type:</label> 
+                    <input type="text" id="reimbursement-type" />
+                </div>
+    
+                <div class="field">
+                    <label  class="label" for="reimbursement-description">Reimbursement description:</label>
+                    <input type="text" id="reimbursement-description" />
+                </div>
+                
+                <div class="field">
+                    <label for="reimbursement-file">Upload Receipt (JPEG, PNG, or GIF)</label>
+                    <input type="file" id="reimbursement-file" />
+                </div>
+                
+                <div class="field is-grouped">
+                    <button id="submit-reimbursement-btn">Submit Reimbursement</button>
+                </div>
+            </div>
+
+        </div>
+       
+    </div>
+    <script src="Employee-omepage-JS.js"></script>
+</body>
+</html>

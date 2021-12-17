@@ -1,0 +1,60 @@
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+	
+	user_id SERIAL PRIMARY KEY,
+	user_first_name VARCHAR(255) NOT NULL,
+	user_last_name VARCHAR(255) NOT NULL,
+	user_email VARCHAR(255) NOT NULL,
+	user_username VARCHAR(255) NOT NULL,
+	user_password VARCHAR(255) NOT NULL,
+	user_role VARCHAR(255) NOT NULL
+);
+
+SELECT * 
+FROM users;
+
+INSERT INTO users (user_first_name, user_last_name, user_email, user_username, user_password, user_role)
+VALUES
+('Ken','Masters', 'jcage@gmail.com', 'Hado098','pass123', 'Finance Manager'),
+('Charlie','Nash', 'sonic123@verizen.net', 'SonBlade123','pass456', 'Employee'),
+('Cammy','White', 'deltared@outlook.com', 'CannonStriker','pass789', 'Employee');
+
+
+DROP TABLE IF EXISTS reimbursements;
+
+CREATE TABLE reimbursements (
+	reimburse_id SERIAL PRIMARY KEY, 
+	reimburse_submitted TIMESTAMP NOT NULL,
+	reimburse_resolved TIMESTAMP NOT NULL,
+	reimburse_status VARCHAR(25) NOT NULL DEFAULT 'PENDING',
+	reimburse_type VARCHAR(55) NOT NULL,
+	reimburse_description VARCHAR(255) NOT NULL,
+	reimburse_amount NUMERIC,
+	reimburse_receipt BYTEA,
+	reimburse_author INTEGER,
+	reimburse_resolver INTEGER,
+		
+	CONSTRAINT fK_reimburse_author FOREIGN KEY (reimburse_author)
+		REFERENCES users(user_id),
+		
+	CONSTRAINT fk_reimburse_resolver FOREIGN KEY (reimburse_resolver)
+		REFERENCES users(user_id)
+);
+
+SELECT * 
+FROM reimbursements;
+
+INSERT INTO reimbursements (reimburse_submitted, reimburse_resolved, reimburse_status, 
+reimburse_type, reimburse_description, reimburse_amount, reimburse_author)
+VALUES
+('2021-03-25 19:10', '2021-03-26 20:10', 'Approved', 'Food', 'company meeting at resturant', 289.43, 2 ),
+('2021-05-06 08:10', '2016-05-06 11:27', 'Approved', 'Travel', 'Plane Ticket to Virginia', 1209.28, 3),
+('2021-03-28 16:30', '2016-06-29 17:30', 'Approved', 'Other', 'Printer ink and paper for remote work', 34.18, 2),
+('2021-05-28 15:00', '2016-06-29 15:45', 'Denied', 'Food', 'Trip to Wendys for lunch', 17.23, 3);
+
+UPDATE reimbursements
+SET
+reimburse_amount = 535.96,
+reimburse_resolver = 1
+WHERE reimburse_id = 1;

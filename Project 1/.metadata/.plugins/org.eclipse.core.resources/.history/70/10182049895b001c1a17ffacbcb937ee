@@ -1,0 +1,126 @@
+package com.revature.controller;
+
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.tika.Tika;
+
+import com.revature.dto.MessageDTO;
+import com.revature.model.Reimbursement;
+import com.revature.model.User;
+import com.revature.service.AuthorizationService;
+import com.revature.service.ReimbursementService;
+
+import io.javalin.Javalin;
+import io.javalin.http.Handler;
+import io.javalin.http.UploadedFile;
+
+
+public class ReimbursementController implements Controller {
+
+	private AuthorizationService authorizationService; 
+	private ReimbursementService reimbursementService;
+	
+	public ReimbursementController() {
+		this.authorizationService = new AuthorizationService();
+		this.reimbursementService = new ReimbursementService();
+	}
+	
+	private Handler getAllReimbursements = (ctx) -> {
+		User currentUser = (User) ctx.req.getSession().getAttribute("currentuser");
+		this.authorizationService.authroizeEmployeeAndFinanceManager(currentUser);
+		
+		List<Reimbursement> reimbursements = this.reimbursementService.getAllReimbursements(currentUser);
+		
+		ctx.json(reimbursements);
+	};
+	
+		private Handler getAllReimbursementsByEmployee = (ctx) -> {
+			User currentUser = (User) ctx.req.getSession().getAttribute("currentuser");
+			this.authorizationService.authroizeEmployeeAndFinanceManager(currentUser);
+			
+			String reimburseAuthor = ctx.pathParam("reimburse_author");
+			List<Reimbursement> reimbursements= this.reimbursementService.getAllReimbursementsByEmployee(currentUser, reimburseAuthor);
+
+			ctx.json(reimbursements);
+		};
+		
+	private Handler getReimbursementById = (ctx) -> {
+		User currentUser = (User) ctx.req.getSession().getAttribute("currentuser");
+		this.authorizationService.authorizeFinanceManager(currentUser);
+		
+		String reimburseId = ctx.pathParam("reimburse_id");
+		Reimbursement reimbursement = this.reimbursementService.getReimbursementById(currentUser, reimburseId);
+		
+		ctx.json(reimbursement);
+	};
+	
+	private Handler updateReimbursement = (ctx) -> {
+		User currentUser = (User) ctx.req.getSession().getAttribute("currentuser");
+		this.authorizationService.authorizeFinanceManager(currentUser);
+
+		String reimburseId = ctx.pathParam("reimburse_id");
+		String reimburseStatus = ctx.formParam("reimbursementStatus");
+		String reimburseResolved = ctx.formParam("reimbursementResolved");
+		String reimburseResolver = ctx.pathParam("reimbursement_resolver");
+		System.out.println(reimburseResolved);
+		Reimbursement reimbursement = this.reimbursementService.updateReimbursement(currentUser, reimburseId,
+				reimburseStatus);
+		
+		ctx.json(reimbursement);
+	};
+	private Handler addReimbursement = (ctx) -> {
+		
+		User currentLoggedIn = (User) ctx.req.getSession().getAttribute("currentuser");
+		this.authorizationService.authorizeEmployee(currentLoggedIn);
+		
+		String reimburseType = ctx.formParam("reimburseType");
+		String reimburseAmount = ctx.formParam("reimburseAmount");
+		String reimburseDescription = ctx.formParam("reimburseDescription");
+		
+		UploadedFile file = ctx.uploadedFile("reimbursementReceipt");
+		if (file == null) {
+			ctx.status(400);
+			ctx.json(new MessageDTO("ONLY JPEG, or PNG format us allowed for receipts"));
+			return;
+		}
+		
+		InputStream content = file.getContent();
+		
+		Tika tika = new Tika();
+		String mimeType = tika.detect(content);
+
+		Reimbursement addedReimbursement = this.reimbursementService.addReimbursement(currentLoggedIn, mimeType, reimburseType, 
+				reimburseAmount, reimburseDescription, content);
+		ctx.json(addedReimbursement);
+		ctx.status(201); 
+ 	};
+
+	private Handler getReceiptImageById = (ctx) -> {
+		User currentLoggedIn = (User) ctx.req.getSession().getAttribute("currentuser");
+		this.authorizationService.authroizeEmployeeAndFinanceManager(currentLoggedIn);
+		
+		
+		String reimburseId = ctx.pathParam("reimburse_id");
+		InputStream receipt = this.reimbursementService.getReceiptImageById(currentLoggedIn, reimburseId);
+		
+		Tika tika = new Tika();
+		String mimeType = tika.detect(receipt);
+		
+		ctx.contentType(mimeType);
+		ctx.result(receipt);
+	};
+	
+	@Override
+	public void mapEndpoints(Javalin app) {
+		
+		app.get("/reimbursements", getAllReimbursements);
+		app.put("/reimbursements/{reimb_id}/status", updateReimbursement);
+		app.get("/reimbursements/{reimb_author}", getAllReimbursementsByEmployee);
+		app.post("/reimbursements", addReimbursement);
+		app.get("/reimbursements/{reimb_id}/image", getReceiptImageById);
+		
+	}	
+	
+
+} 

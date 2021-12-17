@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="io.javalin.http.ExceptionMapper"/>
+    <fullyQualifiedTypeName name="com.revature.service.AuthorizationService"/>
+    <fullyQualifiedTypeName name="com.revature.service.ReimburseService"/>
+    <fullyQualifiedTypeName name="java.util.Objects"/>
+    <fullyQualifiedTypeName name="java.sql.SQLException"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="com.revature.model.Reimbursement"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="com.revature.dto.ReimbursementDTO"/>
+    <fullyQualifiedTypeName name="java.sql.Blob"/>
+    <fullyQualifiedTypeName name="com.revature.exception.InvalidParameterException"/>
+    <fullyQualifiedTypeName name="java.sql.Date"/>
+    <fullyQualifiedTypeName name="java.sql.Statement"/>
+    <fullyQualifiedTypeName name="java.sql.Timestamp"/>
+    <fullyQualifiedTypeName name="java.io.InputStream"/>
+    <fullyQualifiedTypeName name="io.javalin.Javalin"/>
+    <fullyQualifiedTypeName name="javax.security.auth.login.FailedLoginException"/>
+    <fullyQualifiedTypeName name="com.revature.dto.MessageDTO"/>
+    <fullyQualifiedTypeName name="com.revature.exception.UnauthorizedException"/>
+    <fullyQualifiedTypeName name="com.revature.exception.ReimbursementNotFoundException"/>
+    <fullyQualifiedTypeName name="com.revature.exception.ReimbursementAlreadyResolvedException"/>
+    <fullyQualifiedTypeName name="com.revature.exception.ReceiptNotFoundException"/>
+    <fullyQualifiedTypeName name="java.security.InvalidParameterException"/>
+    <fullyQualifiedTypeName name="com.revature.controller.ExceptionController"/>
+</qualifiedTypeNameHistroy>

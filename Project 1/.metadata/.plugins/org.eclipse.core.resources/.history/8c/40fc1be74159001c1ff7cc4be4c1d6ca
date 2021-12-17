@@ -1,0 +1,152 @@
+package com.revature.service;
+
+import java.io.InputStream;  
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.revature.dao.ReimbursementDAO;
+import com.revature.exception.ReimbursementNotFoundException;
+import com.revature.exception.InvalidParameterException;
+import com.revature.exception.ReimbursementAlreadyResolvedException;
+import com.revature.exception.UnauthorizedException;
+import com.revature.model.Reimbursement;
+import com.revature.model.User;
+
+public class ReimbursementService {
+
+	private ReimbursementDAO reimbursementDao;
+
+	public ReimbursementService() {
+		this.reimbursementDao = new ReimbursementDAO();
+	}
+	public ReimbursementService(ReimbursementDAO reimbDao) {
+		this.reimbursementDao = reimbDao;
+	}
+
+	public List<Reimbursement> getReimbursements(User user) throws SQLException {
+		List<Reimbursement> reimburse = null;
+
+		if (user.getUserRole().equals("employee")) {
+			reimburse = this.reimbursementDao.getReimbursementsByEmployeeId(user.getUserId());
+		} else if (user.getUserRole().equals("finance manager")) {
+			reimburse = this.reimbursementDao.getAllReimbursements();
+		}
+		return reimburse;
+	}
+
+	public Reimbursement resolveReimbursement(String reimbId, User user, String status)
+			throws SQLException, ReimbursementAlreadyResolvedException, ReimbursementNotFoundException, UnacceptedStatusException {
+		try {
+			int id = Integer.parseInt(reimbId);
+			
+			Set<String> allowedReimbursementStates = new HashSet<>();
+			allowedReimbursementStates.add("APPROVED");
+			allowedReimbursementStates.add("DENIED");
+			
+			
+			if (!allowedReimbursementStates.contains(status)) {
+				throw new UnacceptedStatusException("Reimbursement status can only be APPROVED or DENIED");
+			}
+			
+			Reimbursement reimb = this.reimbursementDao.getReimbursementsById(id);
+
+			if (reimb == null) {
+				throw new ReimbursementNotFoundException("Reimbursement with id " + id + " was not found");
+			}
+
+			if (reimb.getReimburseResolver() == 0) {
+				this.reimbursementDao.resolveReimbursement(id, user.getUserId(), status);
+			} else {
+				throw new ReimbursementAlreadyResolvedException("Provided reimbursement has already been resolved");
+			}
+			return this.reimbursementDao.getReimbursementsById(id);
+		} catch (NumberFormatException e) {
+			throw new InvalidParameterException("Reimbursement id supplied must be an int");
+		}
+
+	}
+
+	public Reimbursement addReimbursement(User currentlyLoggedInUser, String reimburseType, String reimburseSubmitted,
+			String reimburseResolved, String reimburseStatus, String reimburseDescription, InputStream content)
+			throws SQLException, InvalidParameterException {
+
+			Set<String> allowedFileTypes = new HashSet<>();
+			allowedFileTypes.add("image/jpeg");
+			allowedFileTypes.add("image/png");
+			allowedFileTypes.add("image/gif");
+
+		if (!allowedFileTypes.contains(reimburseType)) {
+			throw new InvalidParameterException("Only PNG, JPEG, or GIF are the allowed image formats");
+		}
+
+		int authorId = currentlyLoggedInUser.getUserId();
+
+			Reimbursement addedReimbursement = this.reimbursementDao.addReimbursement(reimburseSubmitted,
+					reimburseResolved, reimburseStatus, reimburseDescription, authorId, content);
+
+		return addedReimbursement;
+	}
+	
+	public Reimbursement changeReimbursement(User currentlyLoggedInUser, String reimbursementId,
+			int reimbursementAmount)
+			throws SQLException, ReimbursementAlreadyResolvedException, ReimbursementNotFoundException, InvalidParameterException {
+		try {
+			int id = Integer.parseInt(reimbursementId);
+
+			Reimbursement reimbursement = this.reimbursementDao.getReimbursementsById(id);
+
+			if (reimbursement == null) {
+				throw new ReimbursementNotFoundException(
+						"Reimbursement with an id of " + reimbursementId + " was not found");
+			}
+
+			if (reimbursement.getReimburseResolver() == 0) {
+				this.reimbursementDao.changeReimbursement(id, reimbursementAmount, currentlyLoggedInUser.getUserId());
+			} else {
+				throw new ReimbursementAlreadyResolvedException(
+						"Reimbursement has already been given an amount, so the amount cannot be changed");
+			}
+
+			return this.reimbursementDao.getReimbursementsById(id);
+		} catch (NumberFormatException e) {
+			throw new InvalidParameterException("Reimbursement id supplied must be an int");
+		}
+	}
+
+	public InputStream getReceiptFromReimbursementById(User currentlyLoggedInUser, String reimbId) throws SQLException, 
+			UnauthorizedException, ReimbursementNotFoundException, InvalidParameterException {
+		try {
+			int id = Integer.parseInt(reimbId);
+			
+			if (this.reimbursementDao.getReimbursementsById(id) == null) {
+				throw new ReimbursementNotFoundException("Reimbursement with id of " + id + " not found");
+			}
+			
+			if (currentlyLoggedInUser.getUserRole().equals("employee")) {
+				int employeeId = currentlyLoggedInUser.getUserId();
+				List<Reimbursement> reimbsThatbelongToEmployee = this.reimbursementDao.getReimbursementsByEmployeeId(employeeId);
+				
+				Set<Integer> reimbIdsEncountered = new HashSet<>();
+				for( Reimbursement r : reimbsThatbelongToEmployee) {
+					reimbIdsEncountered.add(r.getReimburseId());
+				}
+				
+				if (!reimbIdsEncountered.contains(id)) {
+					throw new UnauthorizedException("Viewing reciepts that are not yours is not allowed");
+				}
+			}
+			
+			InputStream image = this.reimbursementDao.getReceiptFromReimbursementById(id);
+			
+			return image;
+			
+		} catch (NumberFormatException e) {
+			throw new InvalidParameterException("Provided Reimbursement ID must be an int");
+		}
+	}
+}
+
+	
+

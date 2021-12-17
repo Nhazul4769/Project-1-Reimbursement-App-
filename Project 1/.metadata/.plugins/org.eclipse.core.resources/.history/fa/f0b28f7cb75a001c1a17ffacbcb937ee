@@ -1,0 +1,190 @@
+package com.revature.dao;
+
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.revature.model.Reimbursement;
+import com.revature.utility.JDBCUtility;
+
+public class ReimbursementDAO {
+
+	public List<Reimbursement> getAllReimbursements() throws SQLException {
+		try(Connection con = JDBCUtility.getConnection()) {
+			List<Reimbursement> listOfReimbursements = new ArrayList<>();
+			String sql = "SELECT reimburse_id, reimburse_amount, reimburse_submitted, reimburse_resolved, reimburse_status, "
+					+ "reimburse_type, reimburse_description, reimburse_author, "
+					+ "reimburse_resolver FROM project_1.reimbursements";
+			
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				
+				int reimburse_id = rs.getInt("reimburse_id");
+				int reimburse_amount = rs.getInt("reimburse_amount");
+				String reimburse_submitted = rs.getString("reimburse_submitted");
+				String reimburse_resolved = rs.getString("reimburse_resolved");
+				String reimburse_status = rs.getString("reimburse_status");
+				String reimburse_type = rs.getString("reimburse_type");
+				String reimburse_description = rs.getString("reimburse_description");
+				int reimburse_author = rs.getInt("reimburse_author");
+				int reimburse_resolver = rs.getInt("reimburse_resolver");
+					
+			Reimbursement r1 = new Reimbursement(reimburse_id, reimburse_amount, reimburse_submitted, reimburse_resolved, 
+					reimburse_status, reimburse_type, reimburse_description, 
+					reimburse_author, reimburse_resolver);
+			
+			listOfReimbursements.add(r1);	
+			}
+			return listOfReimbursements;
+		}
+	}
+
+	public List<Reimbursement> getAllReimbursementsByEmployeeId(int Id) throws SQLException {
+		try(Connection con = JDBCUtility.getConnection()) {
+			List<Reimbursement> reimbursements = new ArrayList<>();	
+			String sql = "SELECT reimburse_id, reimburse_amount, reimburse_submitted, reimburse_resolved, reimburse_status, "
+					+ "reimburse_type, reimburse_description, reimburse_author, reimburse_resolver "
+					+ "FROM project_1.reimbursements WHERE reimburse_author = ?";
+					
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, Id);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				
+				int reimburse_id = rs.getInt("reimburse_id");
+				int reimburse_amount = rs.getInt("reimburse_amount");
+				String reimburse_submitted = rs.getString("reimburse_submitted");
+				String reimburse_resolved = rs.getString("reimburse_resolved");
+				String reimburse_status = rs.getString("reimburse_status");
+				String reimburse_type = rs.getString("reimburse_type");
+				String reimburse_description = rs.getString("reimburse_description");
+				int reimburse_author = rs.getInt("reimburse_author");
+				int reimburse_resolver = rs.getInt("reimburse_resolver");
+					
+				Reimbursement r1 = new Reimbursement(reimburse_id, reimburse_amount, reimburse_submitted, reimburse_resolved, 
+						reimburse_status, reimburse_type, reimburse_description,
+						reimburse_author, reimburse_resolver);
+			reimbursements.add(r1);
+			}
+			return reimbursements;	
+		}
+	}
+	
+	public Reimbursement getReimbursementById(int id) throws SQLException {
+		try (Connection c = JDBCUtility.getConnection()) {
+			String sql = "SELECT reimburse_id, reimburse_amount, reimburse_submitted, reimburse_resolved, reimburse_status, "
+					+ "reimburse_type, reimburse_description, reimburse_author, reimburse_resolver "
+					+ "FROM project_1.reimbursements WHERE reimb_id = ?";
+
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setInt(1, id);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			 if (rs.next()) {
+				 return new Reimbursement(rs.getInt("reimburse_id"),
+				rs.getInt("reimburse_amount"),
+				rs.getString("reimburse_submitted"),
+				rs.getString("reimburse_resolved"),
+				rs.getString("reimburse_status"),
+				rs.getString("reimburse_type"),
+				rs.getString("reimburse_description"),
+				rs.getInt("reimburse_author"),
+				rs.getInt("reimburse_resolver"));
+				
+		}else {
+			return null;
+		}
+			 
+		}catch(SQLException e) {
+			throw new SQLException("A problem has occured attempting to get reimbursement");
+		}
+		
+	}		
+	
+	public Reimbursement updateReimbursement(int id, int reimburseId, String reimburseStatus) 
+		 throws SQLException {
+		try(Connection con = JDBCUtility.getConnection()) {
+			
+			String sql = "UPDATE project_1.reimbursements "
+					+ "SET "
+					+ "reimburse_resolved = now(), "
+					+ "reimburse_status = ?, "
+					+ "reimburse_resolver = ?"
+					+ "WHERE reimburse_id = ?; ";
+			
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			
+			pstmt.setString(1, reimburseStatus);
+			pstmt.setInt(2, id);
+			pstmt.setInt(3, reimburseId);
+			pstmt.executeUpdate();
+			
+			Reimbursement r = getReimbursementById(reimburseId);
+
+			return new Reimbursement(reimburseId, r.getReimburseAmount(), r.getReimburseSubmitted(), r.getReimburseResolved(), 
+					reimburseStatus, r.getReimburseType(), r.getReimburseDescription(), r.getReimburseAuthor(), id);
+		}
+	}
+
+	public Reimbursement addReimbursement(int reimburseAuthor, String reimburseType, double reimburseAmount,
+			String reimburseDescription, InputStream receipt)  throws SQLException {
+		try(Connection con = JDBCUtility.getConnection()) {
+			con.setAutoCommit(false); 
+			
+			String sql = "INSERT INTO project_1.reimbursements (reimburse_author, reimburse_type, reimburse_amount, "
+					+ "reimburse_submitted, reimburse_description, reimburse_receipt)"
+					+ " VALUES (?,?,?,now(),?,?);";
+		
+			PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1,  reimburseAuthor);
+			pstmt.setString(2, reimburseType);
+			pstmt.setDouble(3, reimburseAmount);
+			pstmt.setString(4, reimburseDescription);
+			pstmt.setBinaryStream(5, receipt);
+			
+			int numberOfInsertedRecords = pstmt.executeUpdate();
+			if(numberOfInsertedRecords != 1) {
+				throw new SQLException("An issue has occured when adding reimbursement");
+			}
+		
+			ResultSet rs = pstmt.getGeneratedKeys();
+			
+			rs.next(); 
+			int generatedId = rs.getInt(1);
+			
+			con.commit();
+			
+			return new Reimbursement(generatedId, reimburseAmount, reimburseDescription, rs.getString("reimburse_submitted"), null,
+					rs.getString("reimburse_status"), reimburseType, rs.getInt("reimburse_id"), reimburseAuthor);
+		} 	
+	}
+
+
+	public InputStream getReceiptImageById(int reimbursementId) throws SQLException {
+		try(Connection con = JDBCUtility.getConnection()) {
+			String sql = "SELECT reimburse_receipt FROM project_1.reimbursements WHERE reimburse_id = ?";
+			
+			PreparedStatement pstmt = con.prepareStatement(sql);
+					
+			pstmt.setInt(1, reimbursementId);
+			
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()) {
+				InputStream receipt = rs.getBinaryStream("reimburse_receipt");
+				return receipt;
+			}
+					
+			return null;
+		}
+		
+	}
+}

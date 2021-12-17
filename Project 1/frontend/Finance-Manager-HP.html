@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Manager Homepage</title>
+    
+    <link rel="stylesheet" href="Finance-Manager-Style.css">
+
+</head>
+<body>
+    <div id="reimbursement-image-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+
+    <h1>Financial Manager Homepage</h1>
+    <button type="logout" id="logout">Logout</button>
+   
+    <div id="fm-homepage-grid-container">
+            
+            <div id ="reimbursements">
+                <div class="topnav">
+                    <a class="active">Search Reimbursements</a>
+                    <div class="search-container">
+                      <form action="/action_page.php">
+                        <input type="text" placeholder="Search..." name="search">
+                        <button type="submit">Search</button>
+                      </form>
+                    </div>
+                </div>
+                <table  class ="table" id="reimbursements-table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Amount</th>
+                            <th>Submitted</th>
+                            <th>Resolved</th>
+                            <th>Status</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Author ID</th>
+                            <th>F-Manager ID</th>
+                            <th>Status</th>
+                            <th>Status Input</th>
+                            <th>Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>     
+    </div>
+        <script src="Finance-Manager-JS.js"></script>
+</body>
+</html>

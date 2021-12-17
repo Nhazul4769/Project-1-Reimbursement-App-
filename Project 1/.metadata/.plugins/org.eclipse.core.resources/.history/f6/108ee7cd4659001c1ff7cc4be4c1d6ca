@@ -1,0 +1,36 @@
+package com.revature.controller;
+
+import com.revature.model.User;
+import com.revature.service.AuthorizationService;
+
+import io.javalin.Javalin;
+import io.javalin.http.Handler;
+
+public class UserController implements Controller {
+	
+	private AuthorizationService authorizationService;
+	
+	public UserController() {
+		this.authorizationService = new AuthorizationService();
+	}
+	
+	private Handler getEmployeeById = (ctx) -> {
+		User user = (User) ctx.req.getSession().getAttribute("currentuser");
+		this.authorizationService.authroizeEmployeeAndFinanceManager(user);
+		
+		String id = ctx.pathParam("employeeId");
+	};
+	
+	private Handler addEmployee = (ctx) -> {
+		User user = (User) ctx.req.getSession().getAttribute("currentuser");
+		this.authorizationService.authorizeFinanceManager(user);
+	};
+	
+	@Override
+	public void mapEndpoints(Javalin app) {
+		app.get("/employees/{employeeId}", getEmployeeById);
+		app.post("/employees", addEmployee);
+	}
+	
+
+}

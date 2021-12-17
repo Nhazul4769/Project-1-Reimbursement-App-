@@ -1,0 +1,94 @@
+package com.revature.dto;
+ 
+import java.util.Objects;
+
+public class AddOrUpdateReimbursementDTO {
+	
+	private double reimburseAmount;
+	private String reimburseStatus;
+	private String reimburseType;
+	private String reimburseDescription;
+	private int reimburseSubmitted;
+	
+	public AddOrUpdateReimbursementDTO() {
+		
+	}
+	
+	public AddOrUpdateReimbursementDTO(double reimburseAmount, String reimburseStatus, String reimburseType, 
+			String reimburseDescription, int reimburseSubmitted) {
+		this.reimburseAmount = reimburseAmount;
+		this.reimburseStatus = reimburseStatus;
+		this.reimburseType = reimburseType;
+		this.reimburseDescription = reimburseDescription;
+		this.reimburseSubmitted = reimburseSubmitted;
+	}
+
+	public double getReimburseAmount() {
+		return reimburseAmount;
+	}
+
+	public void setReimburseAmount(double reimburseAmount) {
+		this.reimburseAmount = reimburseAmount;
+	}
+
+	public String getReimburseStatus() {
+		return reimburseStatus;
+	}
+
+	public void setReimburseStatus(String reimburseStatus) {
+		this.reimburseStatus = reimburseStatus;
+	}
+
+	public String getReimburseType() {
+		return reimburseType;
+	}
+
+	public void setReimburseType(String reimburseType) {
+		this.reimburseType = reimburseType;
+	}
+
+	public String getReimburseDescription() {
+		return reimburseDescription;
+	}
+
+	public void setReimburseDescription(String reimburseDescription) {
+		this.reimburseDescription = reimburseDescription;
+	}
+
+	public int getReimburseSubmitted() {
+		return reimburseSubmitted;
+	}
+
+	public void setReimburseSubmitted(int reimburseSubmitted) {
+		this.reimburseSubmitted = reimburseSubmitted;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(reimburseAmount, reimburseDescription, reimburseStatus, reimburseSubmitted, reimburseType);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AddOrUpdateReimbursementDTO other = (AddOrUpdateReimbursementDTO) obj;
+		return Double.doubleToLongBits(reimburseAmount) == Double.doubleToLongBits(other.reimburseAmount)
+				&& Objects.equals(reimburseDescription, other.reimburseDescription)
+				&& Objects.equals(reimburseStatus, other.reimburseStatus)
+				&& reimburseSubmitted == other.reimburseSubmitted && Objects.equals(reimburseType, other.reimburseType);
+	}
+
+	@Override
+	public String toString() {
+		return "AddOrUpdateReimbursementDTO [reimburseAmount=" + reimburseAmount + ", reimburseStatus="
+				+ reimburseStatus + ", reimburseType=" + reimburseType + ", reimburseDescription="
+				+ reimburseDescription + ", reimburseSubmitted=" + reimburseSubmitted + "]";
+	}
+	
+	
+}
